@@ -139,7 +139,8 @@ struct RectangleStruct {
     pub bound_elements: Vec<BoundElement>,
 }
 
-fn main() {
+#[tokio::main]
+async fn main() {
     let cli = Cli::parse();
     let excalidraw_config: ExcalidrawConfig =
         file_utils::get_excalidraw_config(cli.config_path.as_str());
@@ -164,7 +165,7 @@ fn main() {
 
     let input_path = &cli.input_path.unwrap();
     let input_filepath = input_path.as_str();
-    let docker_compose_yaml = file_utils::get_docker_compose_content(input_filepath);
+    let docker_compose_yaml = file_utils::get_docker_compose_content(input_filepath).await;
 
     let alignment_mode = excalidraw_config.alignment.mode.as_str();
     let (x_margin, y_margin, x_alignment_factor, y_alignment_factor) = margins(alignment_mode);

@@ -19,13 +19,11 @@ serde_yaml = "0.9.21"
 clap = {version = "4.3.8", features = ["derive", "cargo"]}
 thiserror = "1.0.40"
 rand = "0.8.5"
-isahc = "1.7"
+reqwest = { version = "0.12.5", default-features = false, features = ["rustls-tls"] }
 phf = { version = "0.11", features = ["macros"] }
 # linked list to store the containers in the order they appear in the docker-compose.yaml
 indexmap = { version = "2.0.0", features = ["serde"] }
-
-# https://github.com/sfackler/rust-openssl/issues/1021
-openssl = { version = "0.10", features = ["vendored"] }
+tokio = { version = "1", features = ["macros", "rt-multi-thread"] }
 
 [profile.release]
 debug = false

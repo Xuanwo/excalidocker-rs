@@ -1,8 +1,6 @@
 use std::io::Read;
 use std::{fs::File, process::exit};
 
-use isahc::ReadResponseExt;
-
 use serde_yaml::{Mapping, Value};
 
 use crate::exporters::excalidraw_config::DEFAULT_CONFIG;
@@ -30,8 +28,8 @@ pub fn get_excalidraw_config(file_path: &str) -> ExcalidrawConfig {
     }
 }
 
-pub fn get_docker_compose_content(file_path: &str) -> Mapping {
-    let file_content = match get_file_content(file_path) {
+pub async fn get_docker_compose_content(file_path: &str) -> Mapping {
+    let file_content = match get_file_content(file_path).await {
         Ok(content) => content,
         Err(err) => {
             println!("{}", err);
@@ -81,10 +79,10 @@ fn read_yaml_file(file_path: &str) -> Result<String, ExcalidockerError> {
 
 /// Get file content as a String.
 /// Both remote (f.e. from Github) and local files are supported
-fn get_file_content(file_path: &str) -> Result<String, ExcalidockerError> {
+async fn get_file_content(file_path: &str) -> Result<String, ExcalidockerError> {
     if file_path.starts_with("http") {
         let url = rewrite_github_url(file_path);
-        let mut response = match isahc::get(url) {
+        let response = match reqwest::get(url).await {
             Ok(rs) => rs,
             Err(err) => {
                 return Err(RemoteFileFailedRead {
@@ -93,7 +91,7 @@ fn get_file_content(file_path: &str) -> Result<String, ExcalidockerError> {
                 })
             }
         };
-        match response.text() {
+        match response.text().await {
             Ok(data) => Ok(data),
             Err(err) => Err(RemoteFileFailedRead {
                 path: file_path.to_string(),
