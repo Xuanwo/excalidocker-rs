@@ -892,7 +892,7 @@ impl DockerContainer {
             match key.as_str().unwrap() {
                 "image" => {
                     if let Value::String(image) = value {
-                        container.image = image.clone();
+                        container.image.clone_from(image);
                     }
                 }
                 "command" => {
